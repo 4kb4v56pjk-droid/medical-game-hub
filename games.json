@@ -1,6 +1,13 @@
 {
-  "featured": "vitamin-identifier",
+  "featured": "metabolic-pathways",
   "games": [
+    {
+      "id": "metabolic-pathways",
+      "title": "Metabolic Pathways Study",
+      "category": "Biochemistry",
+      "description": "Master metabolic pathways through interactive study and game modes. Learn glycolysis, TCA cycle, and more.",
+      "link": "games/metabolic-pathways.html"
+    },
     {
       "id": "vitamin-identifier",
       "title": "Vitamin Identifier",
