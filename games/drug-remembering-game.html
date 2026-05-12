@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drug Remembering Game</title>
+    <style>
+        :root {
+            --cream: #FAFAF8;
+            --beige: #F5EFE7;
+            --grey-light: #E8E4DC;
+            --grey-mid: #A89F96;
+            --grey-dark: #3D3A36;
+            --accent: #7C6B5D;
+
+            --chol-mus-ag: #D4A574;
+            --chol-nic-ag: #B8956A;
+            --chol-ache-inh: #A68860;
+            --chol-mus-ant: #9A7A54;
+            --chol-nic-ant: #8E6E48;
+            --sym-a1-ag: #C4956B;
+            --sym-a2-ag: #B68559;
+            --sym-b1-ag: #A87547;
+            --sym-b2-ag: #9A6535;
+            --sym-mixed-ag: #8C5D2D;
+            --sym-b-block-sel: #D4A574;
+            --sym-b-block-nonsel: #C4956B;
+            --sym-a-block-sel: #B8956A;
+            --sym-a-block-nonsel: #A68860;
+            --sym-mixed-block: #9A7A54;
+            --sym-central: #8E6E48;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            background: var(--cream);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: var(--grey-dark);
+            line-height: 1.6;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            padding: 10px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .back-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Mode Selector Styles */
+        .mode-selector-screen {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .mode-selector-card {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .mode-selector-header {
+            margin-bottom: 40px;
+        }
+
+        .mode-selector-header h1 {
+            color: var(--accent);
+            font-size: 2.8em;
+            margin-bottom: 10px;
+        }
+
+        .mode-selector-header p {
+            color: var(--grey-mid);
+            font-size: 1.1em;
+        }
+
+        .mode-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .mode-btn {
+            background: linear-gradient(135deg, #D4C5B9 0%, #C4B5A9 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 35px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            font-size: 1rem;
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(124, 107, 93, 0.3);
+            background: linear-gradient(135deg, #C4B5A9 0%, #B4A599 100%);
+        }
+
+        .mode-icon {
+            font-size: 3.5em;
+        }
+
+        .mode-btn h2 {
+            font-size: 1.4em;
+            font-weight: 700;
+        }
+
+        .mode-btn p {
+            font-size: 0.85em;
+            opacity: 0.95;
+        }
+
+        /* Game Screen Styles */
+        .game-screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .game-screen.active {
+            display: block;
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, #E8DFD5 0%, #D4C5B9 100%);
+            padding: 30px 40px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .game-header h2 {
+            color: var(--grey-dark);
+            font-size: 1.8em;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-label {
+            color: var(--grey-mid);
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            color: var(--accent);
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        /* Mode Selector Screen */
+        .game-content {
+            min-height: 500px;
+        }
+
+        /* Drug Game Styles */
+        .drug-game-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            height: calc(100vh - 300px);
+            min-height: 500px;
+        }
+
+        .categories-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            overflow-y: auto;
+            padding-right: 10px;
+            align-content: start;
+        }
+
+        .categories-section::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .categories-section::-webkit-scrollbar-track {
+            background: var(--grey-light);
+            border-radius: 4px;
+        }
+
+        .categories-section::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+
+        .categories-section::-webkit-scrollbar-thumb:hover {
+            background: #9D8E7D;
+        }
+
+        .category-box {
+            background: white;
+            border: 2px dashed var(--grey-light);
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 250px;
+            transition: all 0.2s;
+            cursor: grab;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .category-box:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(124, 107, 93, 0.1);
+        }
+
+        .category-box.drag-over {
+            background: rgba(124, 107, 93, 0.05);
+            border-color: var(--accent);
+            box-shadow: 0 6px 16px rgba(124, 107, 93, 0.15);
+        }
+
+        .category-name {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        .category-info {
+            color: var(--grey-mid);
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+
+        .drugs-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .drugs-section::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .drugs-section::-webkit-scrollbar-track {
+            background: var(--grey-light);
+            border-radius: 4px;
+        }
+
+        .drugs-section::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+
+        .drugs-section::-webkit-scrollbar-thumb:hover {
+            background: #9D8E7D;
+        }
+
+        /* Flip Card Styles */
+        .drug-card-container {
+            perspective: 1000px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .drug-card {
+            background: white;
+            border: 2px solid var(--grey-light);
+            border-radius: 10px;
+            padding: 15px;
+            cursor: grab;
+            user-select: none;
+            flex-shrink: 0;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .drug-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .drug-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: var(--accent);
+        }
+
+        .drug-card:active {
+            cursor: grabbing;
+        }
+
+        .drug-card.dragging {
+            opacity: 0.5;
+        }
+
+        .drug-card-face {
+            width: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .drug-card-front {
+            text-align: center;
+        }
+
+        .drug-card-back {
+            transform: rotateY(180deg);
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            padding: 15px;
+        }
+
+        .drug-name {
+            color: var(--grey-dark);
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+
+        .drug-info {
+            color: var(--grey-mid);
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+
+        .placed-drugs-container {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .placed-drug {
+            background: linear-gradient(135deg, #E8DFD5 0%, #D4C5B9 100%);
+            border: none;
+            padding: 10px 12px;
+            border-radius: 8px;
+            display: inline-block;
+            color: var(--grey-dark);
+            font-weight: 500;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .placed-drug:hover {
+            background: linear-gradient(135deg, #D4C5B9 0%, #C4B5A9 100%);
+        }
+
+        .placed-drug .remove-btn {
+            margin-left: 8px;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        .placed-drug .remove-btn:hover {
+            opacity: 1;
+        }
+
+        /* Study Mode Styles */
+        .study-mode-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .study-card {
+            background: white;
+            border-radius: 15px;
+            padding: 50px 40px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            text-align: center;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--grey-light);
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent) 0%, #9D8E7D 100%);
+            transition: width 0.3s ease;
+        }
+
+        .drug-display {
+            margin-bottom: 30px;
+        }
+
+        .drug-display-name {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+
+        .drug-display-info {
+            background: var(--beige);
+            padding: 20px;
+            border-radius: 10px;
+            color: var(--grey-mid);
+            font-size: 0.95em;
+            line-height: 1.6;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .category-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .category-btn {
+            background: white;
+            border: 2px solid var(--grey-light);
+            padding: 15px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85em;
+            color: var(--grey-dark);
+            transition: all 0.2s;
+        }
+
+        .category-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .category-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-content h3 {
+            font-size: 1.8em;
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+
+        .modal-content p {
+            color: var(--grey-mid);
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 0.95em;
+        }
+
+        .btn:hover {
+            background: #9D8E7D;
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-clue {
+            background: linear-gradient(135deg, #D4C5B9 0%, #C4B5A9 100%);
+            color: var(--grey-dark);
+            border: 2px solid var(--accent);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-clue:hover:not(:disabled) {
+            background: linear-gradient(135deg, #C4B5A9 0%, #B4A599 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(124, 107, 93, 0.2);
+        }
+
+        .btn-clue:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-clue.active {
+            background: linear-gradient(135deg, var(--accent) 0%, #9D8E7D 100%);
+            color: white;
+            border-color: white;
+        }
+
+        .clue-tooltip {
+            position: fixed;
+            background: var(--accent);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: 600;
+            pointer-events: none;
+            z-index: 999;
+            max-width: 200px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(124, 107, 93, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--grey-light);
+            color: var(--grey-dark);
+        }
+
+        .btn-secondary:hover {
+            background: #D4CBBC;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .back-btn {
+                top: 10px;
+                left: 10px;
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .drug-game-container {
+                grid-template-columns: 1.5fr 1fr;
+                gap: 15px;
+                height: calc(100vh - 250px);
+            }
+
+            .mode-options {
+                grid-template-columns: 1fr;
+            }
+
+            .game-header {
+                flex-direction: column;
+                padding: 20px;
+            }
+
+            .game-stats {
+                width: 100%;
+                justify-content: space-around;
+            }
+
+            .study-card {
+                padding: 30px 20px;
+                min-height: 250px;
+            }
+
+            .drug-display-name {
+                font-size: 1.8em;
+            }
+
+            .category-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .modal-content {
+                padding: 30px 20px;
+                width: 95%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .mode-selector-card {
+                padding: 30px 20px;
+            }
+
+            .mode-selector-header h1 {
+                font-size: 2em;
+            }
+
+            .mode-icon {
+                font-size: 2.5em;
+            }
+
+            .mode-btn {
+                padding: 25px 15px;
+            }
+
+            .game-header {
+                padding: 15px;
+            }
+
+            .game-header h2 {
+                font-size: 1.4em;
+            }
+
+            .stat {
+                min-width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-btn">← Back to Games</a>
+
+    <!-- Mode Selector Screen -->
+    <div id="modeSelector" class="game-screen active mode-selector-screen">
+        <div class="mode-selector-card">
+            <div class="mode-selector-header">
+                <h1>Drug Remembering</h1>
+                <p>Master Autonomic Pharmacology</p>
+            </div>
+            <div class="mode-options">
+                <button class="mode-btn" onclick="startGameMode()">
+                    <div class="mode-icon">🎮</div>
+                    <h2>Game Mode</h2>
+                    <p>Drag drugs into categories</p>
+                </button>
+                <button class="mode-btn" onclick="startStudyMode()">
+                    <div class="mode-icon">📚</div>
+                    <h2>Study Mode</h2>
+                    <p>Learn at your own pace</p>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Mode Screen -->
+    <div id="gameScreen" class="game-screen">
+        <a href="javascript:backToModes()" class="back-btn">← Back to Modes</a>
+        <div class="container">
+            <div class="game-header">
+                <h2>🎮 Game Mode</h2>
+                <div class="game-stats">
+                    <div class="stat">
+                        <div class="stat-label">Placed</div>
+                        <div class="stat-value"><span id="placedCount">0</span>/60</div>
+                    </div>
+                    <button class="btn btn-clue" onclick="toggleClue()" id="clueBtn">
+                        💡 Clue <span id="clueCount">5</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="game-content">
+                <div class="drug-game-container">
+                    <div class="categories-section" id="categoriesContainer"></div>
+                    <div class="drugs-section" id="drugsContainer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Study Mode Screen -->
+    <div id="studyScreen" class="game-screen">
+        <a href="javascript:backToModes()" class="back-btn">← Back to Modes</a>
+        <div class="container">
+            <div class="game-header">
+                <h2>📚 Study Mode</h2>
+                <div class="game-stats">
+                    <div class="stat">
+                        <div class="stat-label">Progress</div>
+                        <div class="stat-value"><span id="studyProgress">0</span>%</div>
+                    </div>
+                    <button class="btn btn-clue" onclick="toggleStudyClue()" id="studyClueBtn">
+                        💡 Clue <span id="studyClueCount">5</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="game-content">
+                <div class="study-mode-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+
+                    <div class="study-card" id="studyCard">
+                        <div class="drug-display">
+                            <div class="drug-display-name" id="studyDrugName">Loading...</div>
+                            <button class="btn" onclick="toggleStudyDetails()" style="margin-top: 15px; margin-bottom: 15px; font-size: 0.85rem;">📖 Show Details</button>
+                            <div class="drug-display-info" id="studyDrugInfo"></div>
+                        </div>
+                        <div class="category-buttons" id="studyCategoryButtons"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Completion Modal -->
+    <div id="completionModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Great Job!</h3>
+            <p id="modalMessage"></p>
+            <div class="modal-buttons">
+                <button class="btn" onclick="returnToModes()">Back to Modes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <h3 id="infoTitle">Correct!</h3>
+            <p id="infoCategory"></p>
+            <p id="infoDescription"></p>
+            <div class="modal-buttons">
+                <button class="btn" onclick="nextStudyDrug()">Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Drug Data
+        const drugs = [
+            // Cholinergic
+            { name: "Acetylcholine", category: "Muscarinic Agonists", info: "Choline ester • Direct M agonist • Eye surgery", color: "M" },
+            { name: "Methacholine", category: "Muscarinic Agonists", info: "Choline ester • Direct M agonist • Diagnostic", color: "M" },
+            { name: "Carbachol", category: "Muscarinic Agonists", info: "Choline ester • M & N agonist • Glaucoma", color: "M" },
+            { name: "Bethanechol", category: "Muscarinic Agonists", info: "Choline ester • M agonist • GI/bladder", color: "M" },
+            { name: "Pilocarpine", category: "Muscarinic Agonists", info: "Alkaloid • M agonist • Glaucoma, dry eye", color: "M" },
+
+            { name: "Nicotine", category: "Nicotinic Agonists", info: "Alkaloid • N agonist • Smoking, patches", color: "N" },
+            { name: "Muscarine", category: "Nicotinic Agonists", info: "Alkaloid • M agonist (toxin)", color: "N" },
+
+            { name: "Physostigmine", category: "AChE Inhibitors", info: "Tertiary amine • Crosses BBB • Anticholinergic toxicity", color: "E" },
+            { name: "Neostigmine", category: "AChE Inhibitors", info: "Quaternary ammonium • Myasthenia gravis", color: "E" },
+            { name: "Pyridostigmine", category: "AChE Inhibitors", info: "Quaternary ammonium • Myasthenia gravis", color: "E" },
+            { name: "Edrophonium", category: "AChE Inhibitors", info: "Quaternary ammonium • Short acting • Diagnostic", color: "E" },
+            { name: "Donepezil", category: "AChE Inhibitors", info: "CNS selective • Alzheimer's disease", color: "E" },
+            { name: "Rivastigmine", category: "AChE Inhibitors", info: "CNS selective • Alzheimer's disease", color: "E" },
+
+            { name: "Atropine", category: "Muscarinic Antagonists", info: "Alkaloid • Anticholinergic • Toxidrome classic", color: "MA" },
+            { name: "Scopolamine", category: "Muscarinic Antagonists", info: "Alkaloid • Anticholinergic • Motion sickness", color: "MA" },
+            { name: "Glycopyrrolate", category: "Muscarinic Antagonists", info: "Quaternary ammonium • Anticholinergic", color: "MA" },
+            { name: "Benztropine", category: "Muscarinic Antagonists", info: "Anticholinergic • Parkinson's, dystonia", color: "MA" },
+            { name: "Trihexyphenidyl", category: "Muscarinic Antagonists", info: "Anticholinergic • Parkinson's disease", color: "MA" },
+
+            { name: "Succinylcholine", category: "Nicotinic Antagonists (NMB)", info: "Depolarizing • Muscle paralysis • Anesthesia", color: "NA" },
+            { name: "Pancuronium", category: "Nicotinic Antagonists (NMB)", info: "Nondepolarizing • Muscle paralysis", color: "NA" },
+            { name: "Vecuronium", category: "Nicotinic Antagonists (NMB)", info: "Nondepolarizing • Muscle paralysis", color: "NA" },
+            { name: "Atracurium", category: "Nicotinic Antagonists (NMB)", info: "Nondepolarizing • Hofmann elimination", color: "NA" },
+
+            // Sympathomimetic Agonists
+            { name: "Epinephrine", category: "Mixed α+β Agonists", info: "Catecholamine • α & β agonist • Anaphylaxis", color: "AB" },
+            { name: "Norepinephrine", category: "Mixed α+β Agonists", info: "Catecholamine • α > β agonist • Vasopressor", color: "AB" },
+
+            { name: "Dopamine", category: "Mixed α+β Agonists", info: "Catecholamine • Dose dependent • Shock", color: "AB" },
+
+            { name: "Phenylephrine", category: "α1 Agonists", info: "Catecholamine • α1 agonist • Nasal decongestant", color: "A1" },
+            { name: "Methoxamine", category: "α1 Agonists", info: "Catecholamine • α1 agonist", color: "A1" },
+
+            { name: "Clonidine", category: "α2 Agonists", info: "Imidazoline • Central • ADHD, hypertension", color: "A2" },
+            { name: "Dexmedetomidine", category: "α2 Agonists", info: "Imidazoline • Sedation in ICU", color: "A2" },
+            { name: "Methyldopa", category: "α2 Agonists", info: "DOPA analog • Central • Hypertension", color: "A2" },
+
+            { name: "Isoproterenol", category: "β2 Agonists", info: "Catecholamine • Non-selective β • Bronchospasm", color: "B2" },
+            { name: "Albuterol", category: "β2 Agonists", info: "Sympathomimetic • β2 selective • Asthma", color: "B2" },
+            { name: "Terbutaline", category: "β2 Agonists", info: "Sympathomimetic • β2 selective • COPD", color: "B2" },
+            { name: "Salbutamol", category: "β2 Agonists", info: "Sympathomimetic • β2 selective • Bronchodilator", color: "B2" },
+
+            { name: "Dobutamine", category: "β1 Agonists", info: "Catecholamine • β1 agonist • Heart failure", color: "B1" },
+
+            { name: "Pseudoephedrine", category: "Mixed α+β Agonists", info: "Sympathomimetic • Nasal decongestant", color: "AB" },
+            { name: "Phenylpropanolamine", category: "Mixed α+β Agonists", info: "Sympathomimetic • Nasal decongestant", color: "AB" },
+
+            // Sympathomimetic Antagonists
+            { name: "Propranolol", category: "β-Blockers (Non-selective)", info: "Non-selective β blocker • CNS penetration", color: "BN" },
+            { name: "Nadolol", category: "β-Blockers (Non-selective)", info: "Non-selective β blocker • Hydrophilic", color: "BN" },
+            { name: "Timolol", category: "β-Blockers (Non-selective)", info: "Non-selective β blocker • Glaucoma", color: "BN" },
+
+            { name: "Metoprolol", category: "β-Blockers (Selective)", info: "β1 selective • Hypertension, angina", color: "BS" },
+            { name: "Atenolol", category: "β-Blockers (Selective)", info: "β1 selective • Hydrophilic", color: "BS" },
+            { name: "Bisoprolol", category: "β-Blockers (Selective)", info: "β1 selective • Long-acting", color: "BS" },
+            { name: "Acebutolol", category: "β-Blockers (Selective)", info: "β1 selective • Intrinsic activity", color: "BS" },
+
+            { name: "Phentolamine", category: "α-Blockers (Selective)", info: "Irreversible α blocker • Pheochromocytoma", color: "AS" },
+            { name: "Phenoxybenzamine", category: "α-Blockers (Selective)", info: "Irreversible α blocker • Pheochromocytoma", color: "AS" },
+            { name: "Prazosin", category: "α-Blockers (Selective)", info: "α1 selective • Hypertension, PTSD", color: "AS" },
+            { name: "Terazosin", category: "α-Blockers (Selective)", info: "α1 selective • BPH", color: "AS" },
+            { name: "Doxazosin", category: "α-Blockers (Selective)", info: "α1 selective • BPH, hypertension", color: "AS" },
+
+            { name: "Labetalol", category: "Mixed α+β Blockers", info: "α & β blocker • Hypertension", color: "AB" },
+            { name: "Carvedilol", category: "Mixed α+β Blockers", info: "α & β blocker • Heart failure", color: "AB" },
+
+            { name: "Reserpine", category: "Central Sympatholytics", info: "Vesicular depletion • Hypertension (archaic)", color: "CS" },
+            { name: "Guanethidine", category: "Central Sympatholytics", info: "Blocks NE release • Hypertension (archaic)", color: "CS" }
+        ];
+
+        const categories = [
+            { name: "Muscarinic Agonists", info: "Direct cholinergic effects", color: "M" },
+            { name: "Nicotinic Agonists", info: "Nicotinic receptor activation", color: "N" },
+            { name: "AChE Inhibitors", info: "Prolong acetylcholine action", color: "E" },
+            { name: "Muscarinic Antagonists", info: "Block muscarinic receptors", color: "MA" },
+            { name: "Nicotinic Antagonists (NMB)", info: "Neuromuscular blocking agents", color: "NA" },
+            { name: "α1 Agonists", info: "α1 adrenergic activation", color: "A1" },
+            { name: "α2 Agonists", info: "α2 adrenergic activation", color: "A2" },
+            { name: "β1 Agonists", info: "β1 adrenergic activation", color: "B1" },
+            { name: "β2 Agonists", info: "β2 adrenergic activation", color: "B2" },
+            { name: "Mixed α+β Agonists", info: "Non-selective agonists", color: "AB" },
+            { name: "β-Blockers (Selective)", info: "β1 selective antagonists", color: "BS" },
+            { name: "β-Blockers (Non-selective)", info: "Non-selective β antagonists", color: "BN" },
+            { name: "α-Blockers (Selective)", info: "α1 selective antagonists", color: "AS" },
+            { name: "Mixed α+β Blockers", info: "Non-selective antagonists", color: "AB" },
+            { name: "Central Sympatholytics", info: "Central acting agents", color: "CS" }
+        ];
+
+        // Shuffle function
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Game state
+        let gameState = {
+            currentMode: null,
+            placedDrugs: {},
+            studyIndex: 0,
+            studyAnswered: new Set(),
+            draggedCard: null,
+            shuffledDrugs: [],
+            clueActive: false,
+            clueTarget: null,
+            cluesRemaining: 5
+        };
+
+        // Screen management
+        function startGameMode() {
+            gameState.currentMode = 'game';
+            gameState.placedDrugs = {};
+            gameState.draggedCard = null;
+            gameState.shuffledDrugs = shuffleArray(drugs);
+            gameState.clueActive = false;
+            gameState.cluesRemaining = 5;
+            document.getElementById('modeSelector').classList.remove('active');
+            document.getElementById('gameScreen').classList.add('active');
+            const clueBtn = document.getElementById('clueBtn');
+            clueBtn.disabled = false;
+            clueBtn.classList.remove('active');
+            clueBtn.textContent = `💡 Clue ${gameState.cluesRemaining}`;
+            renderGameMode();
+        }
+
+        function startStudyMode() {
+            gameState.currentMode = 'study';
+            gameState.studyIndex = 0;
+            gameState.studyAnswered = new Set();
+            gameState.cluesRemaining = 5;
+            gameState.clueActive = false;
+            gameState.shuffledDrugs = shuffleArray(drugs);
+            document.getElementById('modeSelector').classList.remove('active');
+            document.getElementById('studyScreen').classList.add('active');
+            const studyClueBtn = document.getElementById('studyClueBtn');
+            studyClueBtn.disabled = false;
+            studyClueBtn.classList.remove('active');
+            studyClueBtn.textContent = `💡 Clue ${gameState.cluesRemaining}`;
+            loadStudyDrug();
+        }
+
+        function backToModes() {
+            gameState.currentMode = null;
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('studyScreen').classList.remove('active');
+            document.getElementById('modeSelector').classList.add('active');
+        }
+
+        function returnToModes() {
+            backToModes();
+            document.getElementById('completionModal').classList.remove('active');
+            document.getElementById('infoModal').classList.remove('active');
+        }
+
+        // Game Mode
+        function renderGameMode() {
+            const categoriesContainer = document.getElementById('categoriesContainer');
+            const drugsContainer = document.getElementById('drugsContainer');
+
+            categoriesContainer.innerHTML = categories.map(cat => `
+                <div class="category-box" id="category-${cat.color}"
+                     ondrop="dropDrug(event, '${cat.name}')" ondragover="allowDrop(event)"
+                     ondragleave="dragLeave(event)">
+                    <div class="category-name">${cat.name}</div>
+                    <div class="category-info">${cat.info}</div>
+                    <div id="placed-${cat.color}" style="margin-top: 12px;"></div>
+                </div>
+            `).join('');
+
+            drugsContainer.innerHTML = gameState.shuffledDrugs
+                .filter(drug => !Object.keys(gameState.placedDrugs).includes(drug.name))
+                .map(drug => `
+                    <div class="drug-card-container" onclick="toggleFlip(event, '${drug.name}')"
+                         onmouseenter="showClueForCard('${drug.name}')"
+                         onmouseleave="removeClueTooltip()">
+                        <div class="drug-card" draggable="true" id="card-${drug.name.replace(/\s+/g, '-')}"
+                             ondragstart="dragStart(event, '${drug.name}')"
+                             ondragend="dragEnd(event)">
+                            <div class="drug-card-face drug-card-front">
+                                <div class="drug-name">${drug.name}</div>
+                                <div style="color: var(--grey-mid); font-size: 0.8em; margin-top: 8px;">Click to flip</div>
+                            </div>
+                            <div class="drug-card-face drug-card-back">
+                                <div class="drug-info" style="margin: 0;">${drug.info}</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+            updatePlacedDrugs();
+            updateGameStats();
+        }
+
+        function toggleFlip(event, drugName) {
+            // Prevent flipping when dragging
+            if (event.target.closest('.drug-card')?.style.cursor === 'grabbing') {
+                return;
+            }
+
+            const cardId = `card-${drugName.replace(/\s+/g, '-')}`;
+            const card = document.getElementById(cardId);
+            if (card) {
+                card.classList.toggle('flipped');
+            }
+        }
+
+        function dragStart(event, drugName) {
+            gameState.draggedCard = drugName;
+            event.dataTransfer.effectAllowed = 'move';
+
+            // Use clue if it was shown
+            if (gameState.clueActive) {
+                useClue(drugName);
+            }
+
+            // Get the card and flip it back to front before dragging
+            const cardId = `card-${drugName.replace(/\s+/g, '-')}`;
+            const card = document.getElementById(cardId);
+            if (card && card.classList.contains('flipped')) {
+                card.classList.remove('flipped');
+            }
+        }
+
+        function dragEnd(event) {
+            document.querySelectorAll('.category-box').forEach(box => {
+                box.classList.remove('drag-over');
+            });
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('drag-over');
+        }
+
+        function dragLeave(event) {
+            event.currentTarget.classList.remove('drag-over');
+        }
+
+        function dropDrug(event, categoryName) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('drag-over');
+
+            if (gameState.draggedCard) {
+                const drug = drugs.find(d => d.name === gameState.draggedCard);
+                if (drug && drug.category === categoryName) {
+                    gameState.placedDrugs[gameState.draggedCard] = categoryName;
+                    renderGameMode();
+
+                    if (Object.keys(gameState.placedDrugs).length === drugs.length) {
+                        setTimeout(() => {
+                            document.getElementById('modalTitle').textContent = '🎉 Perfect!';
+                            document.getElementById('modalMessage').textContent = `You've successfully categorized all ${drugs.length} drugs! Excellent work!`;
+                            document.getElementById('completionModal').classList.add('active');
+                        }, 300);
+                    }
+                }
+                gameState.draggedCard = null;
+            }
+        }
+
+        function updatePlacedDrugs() {
+            categories.forEach(cat => {
+                const placedContainer = document.getElementById(`placed-${cat.color}`);
+                const placedInCategory = Object.entries(gameState.placedDrugs)
+                    .filter(([_, category]) => category === cat.name)
+                    .map(([drugName, _]) => drugName);
+
+                if (placedInCategory.length > 0) {
+                    placedContainer.innerHTML = `<div class="placed-drugs-container">
+                        ${placedInCategory
+                            .map(drugName => `
+                                <span class="placed-drug" onclick="removeDrug('${drugName}')">
+                                    ${drugName} <span class="remove-btn">✕</span>
+                                </span>
+                            `).join('')}
+                    </div>`;
+                } else {
+                    placedContainer.innerHTML = '';
+                }
+            });
+        }
+
+        function removeDrug(drugName) {
+            delete gameState.placedDrugs[drugName];
+            renderGameMode();
+        }
+
+        function updateGameStats() {
+            document.getElementById('placedCount').textContent = Object.keys(gameState.placedDrugs).length;
+        }
+
+        function toggleClue() {
+            if (gameState.cluesRemaining <= 0) return;
+
+            gameState.clueActive = !gameState.clueActive;
+            const clueBtn = document.getElementById('clueBtn');
+
+            if (gameState.clueActive) {
+                clueBtn.classList.add('active');
+                clueBtn.textContent = '💡 Cancel';
+            } else {
+                clueBtn.classList.remove('active');
+                clueBtn.textContent = `💡 Clue ${gameState.cluesRemaining}`;
+                removeClueTooltip();
+            }
+        }
+
+        function showClueForCard(drugName) {
+            if (!gameState.clueActive || gameState.cluesRemaining <= 0) return;
+
+            const drug = drugs.find(d => d.name === drugName);
+            if (!drug) return;
+
+            const tooltip = document.createElement('div');
+            tooltip.className = 'clue-tooltip';
+            tooltip.id = 'clueTooltip';
+            tooltip.textContent = `→ ${drug.category}`;
+            document.body.appendChild(tooltip);
+
+            const card = document.getElementById(`card-${drugName.replace(/\s+/g, '-')}`);
+            if (card) {
+                const rect = card.getBoundingClientRect();
+                tooltip.style.left = (rect.left + rect.width / 2 - tooltip.offsetWidth / 2) + 'px';
+                tooltip.style.top = (rect.top - 50) + 'px';
+            }
+        }
+
+        function removeClueTooltip() {
+            const tooltip = document.getElementById('clueTooltip');
+            if (tooltip) tooltip.remove();
+        }
+
+        function useClue(drugName) {
+            if (!gameState.clueActive || gameState.cluesRemaining <= 0) return;
+
+            gameState.cluesRemaining--;
+            gameState.clueActive = false;
+
+            const clueBtn = document.getElementById('clueBtn');
+            clueBtn.classList.remove('active');
+            clueBtn.textContent = `💡 Clue ${gameState.cluesRemaining}`;
+
+            if (gameState.cluesRemaining <= 0) {
+                clueBtn.disabled = true;
+            }
+
+            removeClueTooltip();
+        }
+
+        // Study Mode
+        function loadStudyDrug() {
+            if (gameState.studyIndex >= gameState.shuffledDrugs.length) {
+                document.getElementById('modalTitle').textContent = '📚 Study Complete!';
+                document.getElementById('modalMessage').textContent = `You've reviewed all ${gameState.shuffledDrugs.length} drugs! Great learning!`;
+                document.getElementById('completionModal').classList.add('active');
+                return;
+            }
+
+            const drug = gameState.shuffledDrugs[gameState.studyIndex];
+            document.getElementById('studyDrugName').textContent = drug.name;
+            document.getElementById('studyDrugInfo').textContent = drug.info;
+            document.getElementById('studyDrugInfo').style.display = 'none';
+
+            const categoryButtons = document.getElementById('studyCategoryButtons');
+            categoryButtons.innerHTML = categories
+                .map(cat => `
+                    <button class="category-btn" onclick="selectCategory('${cat.name}', '${drug.category}')">
+                        ${cat.name.split(' ')[0]}
+                    </button>
+                `).join('');
+
+            updateProgress();
+        }
+
+        function toggleStudyDetails() {
+            const detailsSection = document.getElementById('studyDrugInfo');
+            if (detailsSection.style.display === 'none' || detailsSection.style.display === '') {
+                detailsSection.style.display = 'block';
+            } else {
+                detailsSection.style.display = 'none';
+            }
+        }
+
+        function selectCategory(selected, correct) {
+            if (selected === correct) {
+                gameState.studyAnswered.add(gameState.studyIndex);
+                document.getElementById('infoTitle').textContent = '✓ Correct!';
+                document.getElementById('infoCategory').textContent = `Category: ${correct}`;
+                document.getElementById('infoDescription').textContent = gameState.shuffledDrugs[gameState.studyIndex].info;
+                document.getElementById('infoModal').classList.add('active');
+            }
+        }
+
+        function nextStudyDrug() {
+            document.getElementById('infoModal').classList.remove('active');
+            const drug = drugs[gameState.studyIndex];
+            // Only advance if this was a correct answer, not a clue
+            if (!gameState.studyAnswered.has(gameState.studyIndex)) {
+                return;
+            }
+            gameState.studyIndex++;
+            loadStudyDrug();
+        }
+
+        function closeInfoModal() {
+            document.getElementById('infoModal').classList.remove('active');
+        }
+
+        function updateProgress() {
+            const progress = Math.round((gameState.studyAnswered.size / gameState.shuffledDrugs.length) * 100);
+            document.getElementById('studyProgress').textContent = progress;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function toggleStudyClue() {
+            if (gameState.cluesRemaining <= 0) return;
+
+            const drug = drugs[gameState.studyIndex];
+            gameState.cluesRemaining--;
+
+            const studyClueBtn = document.getElementById('studyClueBtn');
+            studyClueBtn.textContent = `💡 Clue ${gameState.cluesRemaining}`;
+
+            if (gameState.cluesRemaining <= 0) {
+                studyClueBtn.disabled = true;
+            }
+
+            // Show clue hint
+            alert(`💡 Hint: The correct category is "${drug.category}"`);
+        }
+    </script>
+</body>
+</html>

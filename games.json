@@ -9,6 +9,13 @@
       "link": "games/metabolic-pathways.html"
     },
     {
+      "id": "drug-remembering-game",
+      "title": "Drug Remembering Game",
+      "category": "Pharmacology",
+      "description": "Master autonomic pharmacology through drag-and-drop categorization and flashcard study modes. Learn 60+ drugs.",
+      "link": "games/drug-remembering-game.html"
+    },
+    {
       "id": "vitamin-identifier",
       "title": "Vitamin Identifier",
       "category": "Nutrition",
