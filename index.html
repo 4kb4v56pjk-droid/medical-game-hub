@@ -179,6 +179,9 @@
 
         .game-card-content {
             padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
         .game-card h4 {
@@ -203,11 +206,30 @@
             line-height: 1.5;
         }
 
+        .game-card-content > a {
+            margin-top: auto;
+        }
+
         .game-card .btn-secondary {
-            font-size: 0.9rem;
-            padding: 0.65rem 1.5rem;
+            font-size: 0.95rem;
+            padding: 1rem 1.5rem;
             width: 100%;
             text-align: center;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+        }
+
+        .game-card .btn-secondary:hover {
+            background: #2a2824;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .game-card .btn-secondary:active {
+            transform: translateY(0px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
         }
 
         .cta-button {
