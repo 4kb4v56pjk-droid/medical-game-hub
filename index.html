@@ -169,6 +169,12 @@
             transform: translateY(-2px);
         }
 
+        .game-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
         .game-logo {
             height: 140px;
             background: linear-gradient(135deg, #F0E9E0 0%, #E6DCD0 100%);
@@ -204,27 +210,6 @@
             line-height: 1.5;
         }
 
-        .game-card .btn-secondary {
-            font-size: 0.95rem;
-            padding: 1rem 1.5rem;
-            width: 100%;
-            text-align: center;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
-            transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
-        }
-
-        .game-card .btn-secondary:hover {
-            background: #2a2824;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-            transform: translateY(-2px);
-        }
-
-        .game-card .btn-secondary:active {
-            transform: translateY(0px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        }
 
         .cta-button {
             text-align: center;
@@ -354,21 +339,20 @@
 
         function createGameCard(game, isFeatured = false) {
             const logo = createGameLogo(game.id);
-            const buttonClass = isFeatured ? 'btn-primary' : 'btn-secondary';
-            const buttonText = isFeatured ? 'Play Game' : 'Play';
 
             return `
-                <div class="game-card ${isFeatured ? 'featured-card' : ''}">
-                    <div class="game-logo">
-                        ${logo}
+                <a href="${game.link}" class="game-card-link">
+                    <div class="game-card ${isFeatured ? 'featured-card' : ''}">
+                        <div class="game-logo">
+                            ${logo}
+                        </div>
+                        <div class="game-card-content">
+                            <h4>${game.title}</h4>
+                            <p class="game-category">${game.category}</p>
+                            <p>${game.description}</p>
+                        </div>
                     </div>
-                    <div class="game-card-content">
-                        <h4>${game.title}</h4>
-                        <p class="game-category">${game.category}</p>
-                        <p>${game.description}</p>
-                        <a href="${game.link}" class="${buttonClass}">${buttonText}</a>
-                    </div>
-                </div>
+                </a>
             `;
         }
 
