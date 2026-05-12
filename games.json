@@ -1,0 +1,12 @@
+{
+  "featured": "vitamin-identifier",
+  "games": [
+    {
+      "id": "vitamin-identifier",
+      "title": "Vitamin Identifier",
+      "category": "Nutrition",
+      "description": "Test your knowledge of essential vitamins, their functions, and food sources.",
+      "link": "games/vitamin-identifier.html"
+    }
+  ]
+}

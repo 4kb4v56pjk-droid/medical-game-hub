@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vitamin Identifier</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            background: #FAFAF8;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: #3D3A36;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #E8E4DC;
+            padding-bottom: 1rem;
+        }
+
+        header .title-section h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #3D3A36;
+        }
+
+        header .title-section p {
+            color: #A89F96;
+            font-size: 0.95rem;
+        }
+
+        .home-btn {
+            background: #7C6B5D;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-block;
+        }
+
+        .home-btn:hover {
+            background: #6B5B4D;
+        }
+
+        .progress-section {
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #E8E4DC;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 0.8rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #7C6B5D;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #A89F96;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .clue-section {
+            background: linear-gradient(135deg, #E8DFD5 0%, #D4C5B9 100%);
+            color: #3D3A36;
+            padding: 2.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            text-align: center;
+            border: 1px solid #E8E4DC;
+        }
+
+        .clue-label {
+            font-size: 0.8rem;
+            color: #A89F96;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .clue-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 0.8rem;
+            color: #3D3A36;
+        }
+
+        .clue-category {
+            font-size: 0.9rem;
+            color: #A89F96;
+            font-style: italic;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        .option-btn {
+            padding: 1.2rem 1rem;
+            border: 2px solid #E8E4DC;
+            background: white;
+            color: #3D3A36;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .option-btn:hover {
+            border-color: #7C6B5D;
+            background: #F5EFE7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .option-btn.correct {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            color: white;
+            box-shadow: 0 4px 12px rgba(76,175,80,0.2);
+            cursor: default;
+        }
+
+        .option-btn.incorrect-shake {
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .feedback {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 1rem;
+            visibility: hidden;
+        }
+
+        .feedback.show {
+            visibility: visible;
+        }
+
+        .feedback.correct {
+            color: #4CAF50;
+            background: #E8F5E9;
+            border: 1px solid #C8E6C9;
+        }
+
+        .feedback.incorrect {
+            color: #E74C3C;
+            background: #FADBD8;
+            border: 1px solid #F5B7B1;
+        }
+
+        .answer-info {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            border-left: 4px solid #7C6B5D;
+            display: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .answer-info.show {
+            display: block;
+        }
+
+        .answer-info h3 {
+            color: #7C6B5D;
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+        }
+
+        .answer-info p {
+            color: #A89F96;
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        .btn-next {
+            display: block;
+            width: 100%;
+            background: #7C6B5D;
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 1.5rem;
+        }
+
+        .btn-next:hover {
+            background: #6B5B4D;
+        }
+
+        .game-over {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .game-over h2 {
+            color: #3D3A36;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .score {
+            font-size: 2rem;
+            color: #7C6B5D;
+            font-weight: 700;
+            margin: 1rem 0;
+        }
+
+        .game-over .home-btn {
+            display: inline-block;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="title-section">
+                <h1>Vitamin Identifier</h1>
+                <p>Test your knowledge of essential vitamins and their functions</p>
+            </div>
+            <a href="../index.html" class="home-btn">Home</a>
+        </header>
+
+        <div class="progress-section">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text"><span id="currentQuestion">1</span> of <span id="totalQuestions">10</span></div>
+        </div>
+
+        <div id="gameContainer">
+            <div class="clue-section">
+                <div class="clue-label">Identify the vitamin</div>
+                <div class="clue-text" id="clueText">This vitamin helps with...</div>
+                <div class="clue-category" id="clueCategory">Category</div>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <div class="options-grid" id="optionsGrid"></div>
+
+            <div class="answer-info" id="answerInfo">
+                <h3 id="answerTitle">Answer</h3>
+                <p id="answerDescription">Description</p>
+            </div>
+
+            <button class="btn-next" id="nextBtn" onclick="nextQuestion()" style="display:none;">Next Question</button>
+        </div>
+
+        <div id="gameOverContainer" style="display:none;">
+            <div class="game-over">
+                <h2>Quiz Complete!</h2>
+                <p>Your Score</p>
+                <div class="score"><span id="finalScore">0</span>/10</div>
+                <p id="scoreMessage"></p>
+                <a href="../index.html" class="home-btn">Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const vitamins = [
+            {
+                id: 'A',
+                name: 'Vitamin A',
+                clue: 'Important for vision and immune function',
+                category: 'Fat-soluble',
+                description: 'Essential for maintaining healthy eyes, skin, and immune cells. Found in carrots, sweet potatoes, and leafy greens.'
+            },
+            {
+                id: 'B1',
+                name: 'Vitamin B1 (Thiamine)',
+                clue: 'Helps convert food into energy',
+                category: 'Water-soluble',
+                description: 'Plays a key role in energy metabolism and nervous system function. Found in whole grains, pork, and legumes.'
+            },
+            {
+                id: 'B12',
+                name: 'Vitamin B12',
+                clue: 'Critical for nerve function and red blood cells',
+                category: 'Water-soluble',
+                description: 'Essential for DNA synthesis and nervous system health. Found mainly in animal products like meat, fish, and eggs.'
+            },
+            {
+                id: 'C',
+                name: 'Vitamin C',
+                clue: 'Powerful antioxidant and immune booster',
+                category: 'Water-soluble',
+                description: 'Supports immune function, collagen formation, and iron absorption. Found in citrus fruits, berries, and peppers.'
+            },
+            {
+                id: 'D',
+                name: 'Vitamin D',
+                clue: 'Regulates calcium for bone health',
+                category: 'Fat-soluble',
+                description: 'Crucial for calcium absorption and bone strength. Produced by the body when exposed to sunlight. Found in fatty fish and fortified milk.'
+            },
+            {
+                id: 'E',
+                name: 'Vitamin E',
+                clue: 'Protects cells from oxidative damage',
+                category: 'Fat-soluble',
+                description: 'Acts as a powerful antioxidant protecting cells. Found in nuts, seeds, and vegetable oils.'
+            },
+            {
+                id: 'K',
+                name: 'Vitamin K',
+                clue: 'Essential for blood clotting',
+                category: 'Fat-soluble',
+                description: 'Necessary for blood clotting and bone metabolism. Found in leafy greens like kale and spinach.'
+            },
+            {
+                id: 'Folate',
+                name: 'Folate (B9)',
+                clue: 'Critical for cell division and DNA',
+                category: 'Water-soluble',
+                description: 'Essential during pregnancy for fetal development. Found in leafy greens, legumes, and asparagus.'
+            },
+            {
+                id: 'Niacin',
+                name: 'Niacin (B3)',
+                clue: 'Supports energy metabolism and DNA repair',
+                category: 'Water-soluble',
+                description: 'Helps cells convert nutrients to energy. Found in chicken, tuna, turkey, and peanuts.'
+            },
+            {
+                id: 'Biotin',
+                name: 'Biotin (B7)',
+                clue: 'Promotes healthy hair, skin, and nails',
+                category: 'Water-soluble',
+                description: 'Supports hair and skin health. Found in eggs, almonds, and salmon.'
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let answered = false;
+        let currentVitamin = null;
+
+        function displayQuestion() {
+            currentVitamin = vitamins[currentQuestionIndex];
+            document.getElementById('clueText').textContent = currentVitamin.clue;
+            document.getElementById('clueCategory').textContent = currentVitamin.category;
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('totalQuestions').textContent = vitamins.length;
+            document.getElementById('progressFill').style.width = ((currentQuestionIndex + 1) / vitamins.length) * 100 + '%';
+
+            const optionsGrid = document.getElementById('optionsGrid');
+            optionsGrid.innerHTML = '';
+
+            // Show ALL vitamins as options
+            vitamins.forEach(vitamin => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = vitamin.name;
+                btn.onclick = () => checkAnswer(vitamin.id === currentVitamin.id, vitamin);
+                optionsGrid.appendChild(btn);
+            });
+
+            document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
+            document.getElementById('answerInfo').classList.remove('show');
+            document.getElementById('nextBtn').style.display = 'none';
+            answered = false;
+        }
+
+        function checkAnswer(isCorrect, vitamin) {
+            const buttons = document.querySelectorAll('.option-btn');
+            
+            if (isCorrect) {
+                // Correct answer - mark it and show info
+                buttons.forEach(btn => {
+                    if (btn.textContent === currentVitamin.name) {
+                        btn.classList.add('correct');
+                    }
+                });
+                score++;
+                const feedback = document.getElementById('feedback');
+                feedback.textContent = '✓ Correct!';
+                feedback.classList.add('show', 'correct');
+                answered = true;
+                document.getElementById('nextBtn').style.display = 'block';
+            } else {
+                // Incorrect answer - shake the button and let them try again
+                const btn = Array.from(buttons).find(b => b.textContent === vitamin.name);
+                if (btn) {
+                    btn.classList.add('incorrect-shake');
+                    setTimeout(() => btn.classList.remove('incorrect-shake'), 300);
+                }
+                const feedback = document.getElementById('feedback');
+                feedback.textContent = '✗ Not quite. Try again!';
+                feedback.classList.add('show', 'incorrect');
+            }
+
+            // Show the answer info
+            document.getElementById('answerTitle').textContent = currentVitamin.name;
+            document.getElementById('answerDescription').textContent = currentVitamin.description;
+            document.getElementById('answerInfo').classList.add('show');
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < vitamins.length) {
+                displayQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            document.getElementById('gameContainer').style.display = 'none';
+            document.getElementById('gameOverContainer').style.display = 'block';
+            document.getElementById('finalScore').textContent = score;
+
+            const percentage = (score / vitamins.length) * 100;
+            if (percentage === 100) {
+                document.getElementById('scoreMessage').textContent = 'Perfect! You\'re a vitamin expert!';
+            } else if (percentage >= 80) {
+                document.getElementById('scoreMessage').textContent = 'Great job! You know your vitamins well!';
+            } else if (percentage >= 60) {
+                document.getElementById('scoreMessage').textContent = 'Good effort! Keep learning about vitamins.';
+            } else {
+                document.getElementById('scoreMessage').textContent = 'Keep practicing to master vitamins!';
+            }
+        }
+
+        // Start the game
+        displayQuestion();
+    </script>
+</body>
+</html>
