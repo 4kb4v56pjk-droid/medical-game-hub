@@ -108,20 +108,28 @@
 
         .btn-secondary {
             display: inline-block;
-            background: transparent;
-            color: var(--grey-dark);
+            background: #3D3A36;
+            color: white;
             padding: 0.85rem 2rem;
-            border: 1.5px solid var(--grey-mid);
-            border-radius: 24px;
+            border: none;
+            border-radius: 12px;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 0.95rem;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
         }
 
         .btn-secondary:hover {
-            border-color: var(--accent);
-            color: var(--accent);
+            background: #2a2824;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary:active {
+            transform: translateY(0px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .section {
@@ -269,15 +277,15 @@
         </header>
 
         <div class="hero">
-            <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1rem;">
-                <span style="font-size: 48px;">🎮</span>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+                <svg width="48" height="48" viewBox="0 0 100 100" style="fill: none; stroke: #000; stroke-width: 8; stroke-linecap: round; stroke-linejoin: round;">
+                    <rect x="12" y="12" width="76" height="76" rx="16"/>
+                    <text x="50" y="75" font-size="60" font-weight="bold" text-anchor="middle" style="fill: #000; font-family: Georgia, serif;">N</text>
+                </svg>
+                <h2 style="margin: 0; font-size: 2.2rem;">Notion Summary</h2>
             </div>
-            <h2 style="margin: 0;">Medical Game Hub</h2>
-            <p>Learn medicine through interactive games</p>
-            <div style="display: flex; gap: 1rem; justify-content: center;">
-                <a href="#games" class="btn-primary">Explore Games</a>
-                <a href="https://www.notion.so/34e01eca6d2d808b8818f5fb583e8904?v=34e01eca6d2d80de9e5f000cd27080c4&source=copy_link" target="_blank" class="btn-secondary">Notion</a>
-            </div>
+            <p style="margin-bottom: 2rem; font-size: 1rem; color: #A89F96;">View my personal learning notes</p>
+            <a href="https://www.notion.so/34e01eca6d2d808b8818f5fb583e8904?v=34e01eca6d2d80de9e5f000cd27080c4&source=copy_link" target="_blank" class="btn-secondary">Open Notes</a>
         </div>
 
         <div class="section" id="featured">
