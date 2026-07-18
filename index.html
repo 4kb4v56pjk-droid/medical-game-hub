@@ -221,6 +221,50 @@
             line-height: 1.5;
         }
 
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .schedule-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .schedule-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+
+        .schedule-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--grey-dark);
+            font-weight: 600;
+        }
+
+        .schedule-type {
+            font-size: 0.85rem;
+            color: var(--grey-mid);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1.2rem;
+        }
+
+        .schedule-compulsory {
+            background: linear-gradient(135deg, #E8DFD5 0%, #D4C5B9 100%);
+            color: #7C6B5D;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            display: inline-block;
+            font-weight: 600;
+        }
 
         .cta-button {
             text-align: center;
@@ -313,6 +357,28 @@
             <p class="section-subtitle">Explore our collection</p>
             <div class="games-grid" id="games-container">
                 <!-- All games loaded by JavaScript -->
+            </div>
+        </div>
+
+        <div class="section" id="schedule">
+            <h3 class="section-title">Class Schedule</h3>
+            <p class="section-subtitle">Subscribe to your course calendars</p>
+            <div class="schedule-grid">
+                <div class="schedule-card">
+                    <h4>RAID 204</h4>
+                    <p class="schedule-type schedule-compulsory">Compulsory</p>
+                    <a href="webcal://p171-caldav.icloud.com/published/2/MTc2NDEzNjExNjIxNzY0MW56HvkglhhfJdy632A9JKCJEBGnheL4RM_94m1P2ANPOhiYyIBPbv11tRgBnwADKpM4CFELPXhS1tSrrPAk0dY" class="btn-primary">Add to Calendar</a>
+                </div>
+                <div class="schedule-card">
+                    <h4>RAID 213</h4>
+                    <p class="schedule-type schedule-compulsory">Compulsory</p>
+                    <a href="webcal://p171-caldav.icloud.com/published/2/MTc2NDEzNjExNjIxNzY0MW56HvkglhhfJdy632A9JKB_1CBsFNwifVWwNRg7hzz6Q-wsp-nXmX9Nw7w3XNmZNTUBf6JCpP0hXxS5wJW1iRE" class="btn-primary">Add to Calendar</a>
+                </div>
+                <div class="schedule-card">
+                    <h4>RAID 214</h4>
+                    <p class="schedule-type schedule-compulsory">Compulsory</p>
+                    <a href="webcal://p171-caldav.icloud.com/published/2/MTc2NDEzNjExNjIxNzY0MW56HvkglhhfJdy632A9JKDqWyUtsrjptqJk8gEuFZrH8PiPgAy5965-9hNmFIMeD6ZfprwGApCoagzEtF4AeRE" class="btn-primary">Add to Calendar</a>
+                </div>
             </div>
         </div>
 
