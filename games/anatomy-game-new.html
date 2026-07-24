@@ -1036,19 +1036,21 @@
         }
 
         function backButtonClick() {
-            // Check if ANY game mode is active
-            const flashcardActive = document.getElementById('flashcardScreen').classList.contains('active');
-            const matchingActive = document.getElementById('matchingScreen').classList.contains('active');
-            const quizActive = document.getElementById('quizScreen').classList.contains('active');
+            const modeSelector = document.getElementById('modeSelector');
+            const flashcardScreen = document.getElementById('flashcardScreen');
+            const matchingScreen = document.getElementById('matchingScreen');
+            const quizScreen = document.getElementById('quizScreen');
 
-            if (flashcardActive || matchingActive || quizActive) {
-                // Go back to mode selector
-                document.getElementById('modeSelector').classList.add('active');
-                document.getElementById('flashcardScreen').classList.remove('active');
-                document.getElementById('matchingScreen').classList.remove('active');
-                document.getElementById('quizScreen').classList.remove('active');
-            } else {
-                // Go to home page
+            // Check if we're in a game mode (not on mode selector)
+            if (flashcardScreen.classList.contains('active') || matchingScreen.classList.contains('active') || quizScreen.classList.contains('active')) {
+                // Hide all game screens
+                flashcardScreen.classList.remove('active');
+                matchingScreen.classList.remove('active');
+                quizScreen.classList.remove('active');
+                // Show mode selector
+                modeSelector.classList.add('active');
+            } else if (modeSelector.classList.contains('active')) {
+                // On mode selector - go to home page
                 window.location.href = '../index.html';
             }
         }
