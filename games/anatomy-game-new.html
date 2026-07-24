@@ -950,6 +950,7 @@
         function touchStart(e) {
             draggedCard = e.target;
             e.target.classList.add('dragging');
+            e.target.style.opacity = '0.6';
             if (e.touches.length > 0) {
                 touchPosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
             }
@@ -957,20 +958,33 @@
 
         function touchEnd(e) {
             if (!draggedCard) return;
-            e.target.classList.remove('dragging');
+            draggedCard.classList.remove('dragging');
+            draggedCard.style.opacity = '1';
 
             if (e.changedTouches.length > 0) {
                 const touchX = e.changedTouches[0].clientX;
                 const touchY = e.changedTouches[0].clientY;
-                const elementBelow = document.elementFromPoint(touchX, touchY);
 
-                if (elementBelow && elementBelow.classList.contains('slot')) {
-                    const slotId = elementBelow.id;
+                // Find all slots and check which one contains the touch point
+                const allSlots = document.querySelectorAll('.slot');
+                let targetSlot = null;
+
+                for (let slot of allSlots) {
+                    const rect = slot.getBoundingClientRect();
+                    if (touchX >= rect.left && touchX <= rect.right &&
+                        touchY >= rect.top && touchY <= rect.bottom) {
+                        targetSlot = slot;
+                        break;
+                    }
+                }
+
+                if (targetSlot) {
+                    const slotId = targetSlot.id;
                     const match = slotId.match(/slot-(\d+)-(\d+)/);
                     if (match) {
                         const muscleIdx = parseInt(match[1]);
                         const slotIdx = parseInt(match[2]);
-                        dropCard({ preventDefault: () => {}, currentTarget: elementBelow }, muscleIdx, slotIdx);
+                        dropCard({ preventDefault: () => {}, currentTarget: targetSlot }, muscleIdx, slotIdx);
                     }
                 }
             }
