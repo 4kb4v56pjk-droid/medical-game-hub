@@ -560,7 +560,7 @@
     </style>
 </head>
 <body>
-    <button class="back-btn" onclick="window.location.href='../'">← Back</button>
+    <button class="back-btn" onclick="backButtonClick()">← Back</button>
 
     <!-- Mode Selector -->
     <div id="modeSelector" class="screen active mode-selector-screen">
@@ -1035,11 +1035,26 @@
             document.getElementById('backMenuBtn2').addEventListener('click', goBack);
         }
 
+        function backButtonClick() {
+            // Check if ANY game mode is active
+            const flashcardActive = document.getElementById('flashcardScreen').classList.contains('active');
+            const matchingActive = document.getElementById('matchingScreen').classList.contains('active');
+            const quizActive = document.getElementById('quizScreen').classList.contains('active');
+
+            if (flashcardActive || matchingActive || quizActive) {
+                // Go back to mode selector
+                document.getElementById('modeSelector').classList.add('active');
+                document.getElementById('flashcardScreen').classList.remove('active');
+                document.getElementById('matchingScreen').classList.remove('active');
+                document.getElementById('quizScreen').classList.remove('active');
+            } else {
+                // Go to home page
+                window.location.href = '../index.html';
+            }
+        }
+
         function goBack() {
-            document.getElementById('modeSelector').classList.add('active');
-            document.getElementById('flashcardScreen').classList.remove('active');
-            document.getElementById('matchingScreen').classList.remove('active');
-            document.getElementById('quizScreen').classList.remove('active');
+            backButtonClick();
         }
 
         // Quiz Mode Variables

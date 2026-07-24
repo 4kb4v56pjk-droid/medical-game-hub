@@ -488,7 +488,7 @@
         }
 
         function createGameCard(game, isFeatured = false) {
-            const logo = createGameLogo(game.id);
+            const logo = createGameLogo(game);
 
             return `
                 <a href="${game.link}" class="game-card-link">
@@ -506,7 +506,13 @@
             `;
         }
 
-        function createGameLogo(gameId) {
+        function createGameLogo(game) {
+            // Use logo image from games.json if available
+            if (game.logo) {
+                return `<img src="${game.logo}" alt="${game.title}" style="width: 100%; height: 100%; object-fit: contain; padding: 10px;"/>`;
+            }
+
+            // Fall back to SVG logos for other games
             const logos = {
                 'metabolic-pathways': `
                     <svg width="80" height="80" viewBox="0 0 100 100" style="stroke: #7C6B5D; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round;">
@@ -544,7 +550,7 @@
                 `
             };
 
-            return logos[gameId] || `<div style="color: #7C6B5D; font-size: 48px;">?</div>`;
+            return logos[game.id] || `<div style="color: #7C6B5D; font-size: 48px;">?</div>`;
         }
 
         // Load games when page loads
