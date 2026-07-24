@@ -922,13 +922,13 @@
             allNerves = shuffleArray(allNerves).sort();
 
             bloodPool.innerHTML = allBlood.map(b => `
-                <div class="card" draggable="true" ondragstart="dragStart(event)" ondragend="dragEnd(event)" ontouchstart="touchStart(event)" ontouchend="touchEnd(event)" data-answer="${b}" data-type="blood">
+                <div class="card" draggable="true" ondragstart="dragStart(event)" ondragend="dragEnd(event)" ontouchstart="touchStart(event)" ontouchmove="touchMove(event)" ontouchend="touchEnd(event)" data-answer="${b}" data-type="blood">
                     ${b}
                 </div>
             `).join('');
 
             nervePool.innerHTML = allNerves.map(n => `
-                <div class="card" draggable="true" ondragstart="dragStart(event)" ondragend="dragEnd(event)" ontouchstart="touchStart(event)" ontouchend="touchEnd(event)" data-answer="${n}" data-type="nerve">
+                <div class="card" draggable="true" ondragstart="dragStart(event)" ondragend="dragEnd(event)" ontouchstart="touchStart(event)" ontouchmove="touchMove(event)" ontouchend="touchEnd(event)" data-answer="${n}" data-type="nerve">
                     ${n}
                 </div>
             `).join('');
@@ -949,8 +949,18 @@
 
         function touchStart(e) {
             draggedCard = e.target;
+            e.preventDefault();
             e.target.classList.add('dragging');
             e.target.style.opacity = '0.6';
+            e.target.style.zIndex = '10000';
+            if (e.touches.length > 0) {
+                touchPosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            }
+        }
+
+        function touchMove(e) {
+            if (!draggedCard) return;
+            e.preventDefault();
             if (e.touches.length > 0) {
                 touchPosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
             }
