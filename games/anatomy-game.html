@@ -439,6 +439,8 @@
             gap: 10px;
             max-height: 600px;
             overflow-y: auto;
+            overflow-x: visible;
+            position: relative;
         }
 
         .card {
@@ -952,6 +954,8 @@
         }
 
         let cardStartPos = null;
+        let currentTouchPos = null;
+        let animationFrameId = null;
 
         function touchStart(e) {
             draggedCard = e.target;
@@ -959,6 +963,7 @@
             e.target.classList.add('dragging');
             e.target.style.opacity = '0.6';
             e.target.style.zIndex = '10000';
+            e.target.style.willChange = 'transform';
 
             const rect = e.target.getBoundingClientRect();
             cardStartPos = {
@@ -968,32 +973,43 @@
 
             if (e.touches.length > 0) {
                 touchPosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                currentTouchPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
             }
         }
 
+        function updateCardPosition() {
+            if (!draggedCard || !touchPosition || !currentTouchPos || !cardStartPos) return;
+
+            const offsetX = currentTouchPos.x - touchPosition.x;
+            const offsetY = currentTouchPos.y - touchPosition.y;
+
+            draggedCard.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+            animationFrameId = requestAnimationFrame(updateCardPosition);
+        }
+
         function touchMove(e) {
-            if (!draggedCard || !touchPosition || !cardStartPos) return;
+            if (!draggedCard || !touchPosition) return;
             e.preventDefault();
 
             if (e.touches.length > 0) {
-                const currentX = e.touches[0].clientX;
-                const currentY = e.touches[0].clientY;
-
-                // Calculate offset from INITIAL touch position
-                const offsetX = currentX - touchPosition.x;
-                const offsetY = currentY - touchPosition.y;
-
-                // Use transform for smooth GPU-accelerated movement
-                draggedCard.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+                currentTouchPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                if (!animationFrameId) {
+                    animationFrameId = requestAnimationFrame(updateCardPosition);
+                }
             }
         }
 
         function touchEnd(e) {
             if (!draggedCard) return;
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
             draggedCard.classList.remove('dragging');
             draggedCard.style.opacity = '1';
             draggedCard.style.transform = '';
             draggedCard.style.zIndex = '';
+            draggedCard.style.willChange = '';
 
             if (e.changedTouches.length > 0) {
                 const touchX = e.changedTouches[0].clientX;
