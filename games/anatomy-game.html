@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anatomy Game</title>
+    <style>
+        :root {
+            --cream: #FAFAF8;
+            --beige: #F5EFE7;
+            --grey-light: #E8E4DC;
+            --grey-mid: #A89F96;
+            --grey-dark: #3D3A36;
+            --accent: #7C6B5D;
+            --green: #4CAF50;
+            --pastel-pink: #FFB3D9;
+            --pastel-yellow: #FFE082;
+            --pastel-brown: #F0E0D8;
+            --light-pink: #FFCCE5;
+            --light-yellow: #FFF0B3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--cream);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: var(--grey-dark);
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Back Button */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        /* Mode Selector */
+        .mode-selector-screen {
+            width: 100vw;
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .selector-card {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .selector-card h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .selector-card p {
+            color: var(--grey-mid);
+            margin-bottom: 2rem;
+        }
+
+        .selector-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .selector-btn {
+            background: white;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .selector-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* Flashcard Screen */
+        .flashcard-screen {
+            width: 100vw;
+            min-height: 100vh;
+            padding: 100px 20px 40px;
+            flex-direction: column;
+        }
+
+        .flashcard-header {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 10px 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 999;
+        }
+
+        .flashcard-header h2 {
+            font-size: 1.3rem;
+            margin: 0;
+        }
+
+        .flashcard-title {
+            position: fixed;
+            top: 75px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.8rem;
+            font-weight: 600;
+            background: white;
+            padding: 10px 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 998;
+        }
+
+        .flashcard-container {
+            width: 100%;
+            max-width: 424px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .flashcards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            width: 100%;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 150px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            perspective: 1000px;
+            padding: 0;
+        }
+
+        .flashcard-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            width: 95%;
+            height: 95%;
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .flashcard-front {
+            background: linear-gradient(135deg, #E8DFD5 0%, #D4C5B9 100%);
+            color: var(--grey-dark);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .flashcard-back {
+            background: var(--beige);
+            color: var(--grey-dark);
+            font-size: 0.8rem;
+            transform: rotateY(180deg);
+            padding: 12px;
+            text-align: center;
+            line-height: 1.3;
+            overflow: auto;
+            word-break: break-word;
+        }
+
+        .card-label {
+            font-weight: 600;
+            color: var(--accent);
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+
+        .card-content {
+            font-size: 0.8rem;
+            font-weight: normal;
+            line-height: 1.3;
+        }
+
+        .flashcard:nth-child(1) {
+            grid-column: 1 / -1;
+            width: 50%;
+            margin: 0 auto;
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: #6B5B4D;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: var(--grey-mid);
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        .completion-screen {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .completion-screen h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin: 1rem 0;
+        }
+
+        /* Matching Screen */
+        .matching-screen {
+            width: 100vw;
+            min-height: 100vh;
+            padding: 100px 20px 40px;
+            flex-direction: column;
+        }
+
+        .matching-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .matching-header {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .matching-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .matching-left {
+            grid-column: 1 / 3;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            max-height: 600px;
+        }
+
+        .muscle-pair {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .muscle-pair:last-child {
+            margin-bottom: 0;
+        }
+
+        .muscle-column {
+            display: contents;
+        }
+
+        .muscle-row {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--grey-light);
+        }
+
+        .muscle-row:last-child {
+            border-bottom: none;
+        }
+
+        .muscle-name {
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .muscle-slots {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slot {
+            background: var(--pastel-brown);
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid var(--grey-mid);
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: var(--grey-mid);
+            transition: all 0.3s;
+        }
+
+        .slot.blood {
+            border-color: var(--pastel-pink);
+        }
+
+        .slot.nerve {
+            border-color: var(--pastel-yellow);
+        }
+
+        .slot.has-card {
+            color: var(--grey-dark);
+            font-weight: 600;
+        }
+
+        .slot.blood.has-card {
+            border-color: var(--pastel-pink);
+            background: var(--light-pink);
+        }
+
+        .slot.nerve.has-card {
+            border-color: var(--pastel-yellow);
+            background: var(--light-yellow);
+        }
+
+        .slot-label {
+            font-size: 0.7rem;
+            color: var(--grey-mid);
+            margin-bottom: 3px;
+        }
+
+        .matching-right {
+            grid-column: 3 / 5;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .card-pool {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .pool-title {
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .cards {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #E8DFD5 0%, #D4C5B9 100%);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: grab;
+            font-size: 0.8rem;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.2s;
+            user-select: none;
+            touch-action: none;
+        }
+
+        .card:active {
+            cursor: grabbing;
+            opacity: 0.7;
+        }
+
+        .card.dragging {
+            opacity: 0.5;
+        }
+
+        .card.matched {
+            display: none;
+        }
+
+        /* Quiz Screen */
+        .quiz-screen {
+            width: 100vw;
+            min-height: 100vh;
+            padding: 100px 20px 40px;
+            flex-direction: column;
+        }
+
+        .quiz-container {
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .quiz-content {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .quiz-progress {
+            text-align: center;
+            color: var(--grey-mid);
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        .quiz-question {
+            font-size: 1.3rem;
+            color: var(--grey-dark);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .quiz-option-btn {
+            background: white;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .quiz-option-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .quiz-option-btn.wrong {
+            background: var(--accent);
+            color: white;
+            cursor: not-allowed;
+        }
+
+        .quiz-option-btn.correct {
+            background: var(--green);
+            color: white;
+            cursor: default;
+        }
+
+        .quiz-feedback {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-feedback.correct {
+            background: #E8F5E9;
+            color: var(--green);
+        }
+
+        .quiz-feedback.retry {
+            background: #FCE4EC;
+            color: #C2185B;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="goBack()">← Back</button>
+
+    <!-- Mode Selector -->
+    <div id="modeSelector" class="screen active mode-selector-screen">
+        <div class="selector-card">
+            <h1>Anatomy Game</h1>
+            <p>Select Study Mode</p>
+            <div class="selector-buttons">
+                <button class="selector-btn" onclick="startFlashcard()">🎴 Flashcard Study</button>
+                <button class="selector-btn" onclick="startMatching()">🔗 Matching Game</button>
+                <button class="selector-btn" onclick="startQuiz()">❓ Quiz Mode</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flashcard Screen -->
+    <div id="flashcardScreen" class="screen flashcard-screen">
+        <div class="flashcard-header">
+            <h2>Flashcard Study</h2>
+            <p style="margin: 0; font-size: 0.9rem; color: var(--grey-mid);" id="progress">0 / 15</p>
+        </div>
+        <div class="flashcard-title" id="muscleName"></div>
+
+        <div class="flashcard-container">
+            <div class="progress-text" id="goodCount">Good: 0</div>
+            <div class="flashcards-grid" id="flashcardsGrid"></div>
+            <div class="buttons-container">
+                <button class="btn" onclick="againMuscle()">Again</button>
+                <button class="btn" onclick="goodMuscle()">Good</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quizScreen" class="screen quiz-screen">
+        <div class="flashcard-header">
+            <h2>Quiz Mode</h2>
+        </div>
+        <div class="quiz-container"></div>
+    </div>
+
+    <!-- Matching Screen -->
+    <div id="matchingScreen" class="screen matching-screen">
+        <div class="flashcard-header">
+            <h2>Matching Game</h2>
+        </div>
+
+        <div class="matching-container">
+            <div class="matching-header">
+                <div class="stat-box" id="progressStat">Progress: 0/30</div>
+                <div class="stat-box" id="mistakeStat">Mistakes: 0</div>
+            </div>
+
+            <div class="matching-content">
+                <div class="matching-left" id="muscleList"></div>
+                <div class="matching-right">
+                    <div class="card-pool">
+                        <div class="pool-title">Blood Supply</div>
+                        <div class="cards" id="bloodPool"></div>
+                    </div>
+                    <div class="card-pool">
+                        <div class="pool-title">Innervation</div>
+                        <div class="cards" id="nervePool"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const musclesData = [
+            { name: "Trapezius", function: "Upper: elevate\nMiddle: adduct\nLower: depress", origin: "Occipital bone\nSuperior nuchal ligament\nSpinous C7-T12", insertion: "Lateral 1/3 clavicle\nAcromion process\nSpine of scapula", blood: ["Transverse cervical artery", "Suprascapular artery"], nerve: ["Spinal accessory nerve"] },
+            { name: "Latissimus Dorsi", function: "Extend, adduct\nrotate humerus", origin: "Spinous T7-T12\nThoracolumbar fascia\nRibs 9-12\nIliac crest", insertion: "Floor of\nintertubercular groove", blood: ["Thoracodorsal artery"], nerve: ["Thoracodorsal nerve"] },
+            { name: "Rhomboid Major", function: "Retract & elevate\nscapula", origin: "Spinous process\nT2-T5", insertion: "Medial border\nof scapula", blood: ["Dorsal scapular artery"], nerve: ["Dorsal scapular nerve"] },
+            { name: "Rhomboid Minor", function: "Retract & elevate\nscapula", origin: "Spinous process\nC7-T1", insertion: "Medial border\nof scapula", blood: ["Dorsal scapular artery"], nerve: ["Dorsal scapular nerve"] },
+            { name: "Levator Scapulae", function: "Elevate scapula", origin: "Transverse process\nC1-C4", insertion: "Superior angle\nof scapula", blood: ["Dorsal scapular artery"], nerve: ["Dorsal scapular nerve"] },
+            { name: "Serratus Posterior Superior", function: "Elevate ribs 2-5\nduring inspiration", origin: "Nuchal ligament\nSpinous C7-T3", insertion: "External surface\nribs 2-5", blood: ["Intercostal arteries"], nerve: ["Anterior rami"] },
+            { name: "Serratus Posterior Inferior", function: "Depress ribs 9-12\nduring exhalation", origin: "Thoracolumbar fascia\nSpinous T11-L2", insertion: "Ribs 9-12", blood: ["Intercostal arteries"], nerve: ["Anterior rami"] },
+            { name: "Splenius Capitis", function: "Draw head backward\nRotate head", origin: "Nuchal ligament\nSpinous C7-T6", insertion: "Mastoid process\nNuchal line", blood: ["Occipital artery", "Transverse cervical artery"], nerve: ["Posterior rami"] },
+            { name: "Splenius Cervicis", function: "Draw head backward\nRotate head", origin: "Nuchal ligament\nSpinous C7-T6", insertion: "Transverse process\nC1-C4", blood: ["Occipital artery", "Transverse cervical artery"], nerve: ["Posterior rami"] }
+        ];
+
+        let currentIndex = 0;
+        let goodMuscles = [];
+        let againMuscles = [];
+        let isFirstPass = true;
+        let workingList = [];
+
+        // Matching mode variables
+        let matchingData = [];
+        let mistakes = 0;
+        let completed = 0;
+        let totalSlots = 0;
+
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function startFlashcard() {
+            workingList = shuffleArray([...musclesData]);
+            currentIndex = 0;
+            goodMuscles = [];
+            againMuscles = [];
+            isFirstPass = true;
+            document.getElementById('modeSelector').classList.remove('active');
+            document.getElementById('flashcardScreen').classList.add('active');
+
+            const container = document.querySelector('.flashcard-container');
+            container.innerHTML = `
+                <div class="progress-text" id="goodCount">Good: 0</div>
+                <div class="flashcards-grid" id="flashcardsGrid"></div>
+                <div class="buttons-container">
+                    <button class="btn" onclick="againMuscle()">Again</button>
+                    <button class="btn" onclick="goodMuscle()">Good</button>
+                </div>
+            `;
+
+            loadMuscle();
+        }
+
+        function loadMuscle() {
+            const muscle = workingList[currentIndex];
+            document.getElementById('muscleName').textContent = muscle.name;
+            document.getElementById('progress').textContent = `${goodMuscles.length} / ${musclesData.length}`;
+            document.getElementById('goodCount').textContent = `Good: ${goodMuscles.length}`;
+
+            const grid = document.getElementById('flashcardsGrid');
+            grid.innerHTML = `
+                <div class="flashcard" onclick="toggleFlip(this)">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-face flashcard-front">Function</div>
+                        <div class="flashcard-face flashcard-back">
+                            <div class="card-content">${muscle.function.split('\n').join('<br>')}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flashcard" onclick="toggleFlip(this)">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-face flashcard-front">Origin</div>
+                        <div class="flashcard-face flashcard-back">
+                            <div class="card-content">${muscle.origin.split('\n').join('<br>')}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flashcard" onclick="toggleFlip(this)">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-face flashcard-front">Insertion</div>
+                        <div class="flashcard-face flashcard-back">
+                            <div class="card-content">${muscle.insertion.split('\n').join('<br>')}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flashcard" onclick="toggleFlip(this)">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-face flashcard-front">Blood Supply</div>
+                        <div class="flashcard-face flashcard-back">
+                            <div class="card-content">${muscle.blood.join('<br>')}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flashcard" onclick="toggleFlip(this)">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-face flashcard-front">Innervation</div>
+                        <div class="flashcard-face flashcard-back">
+                            <div class="card-content">${muscle.nerve.join('<br>')}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleFlip(element) {
+            element.classList.toggle('flipped');
+        }
+
+        function goodMuscle() {
+            goodMuscles.push(workingList[currentIndex].name);
+            nextMuscle();
+        }
+
+        function againMuscle() {
+            againMuscles.push(workingList[currentIndex].name);
+            nextMuscle();
+        }
+
+        function nextMuscle() {
+            currentIndex++;
+            if (currentIndex < workingList.length) {
+                loadMuscle();
+            } else {
+                if (isFirstPass && againMuscles.length > 0) {
+                    startRetry();
+                } else {
+                    showCompletion();
+                }
+            }
+        }
+
+        function startRetry() {
+            isFirstPass = false;
+            workingList = shuffleArray(musclesData.filter(m => againMuscles.includes(m.name)));
+            currentIndex = 0;
+            loadMuscle();
+        }
+
+        function showCompletion() {
+            const container = document.querySelector('.flashcard-container');
+            container.innerHTML = `
+                <div class="completion-screen">
+                    <h2>Session Complete!</h2>
+                    <div class="score-display">${goodMuscles.length}/${musclesData.length}</div>
+                    <p style="color: var(--grey-mid); margin-bottom: 2rem;">Muscles mastered on first try</p>
+                    <button class="btn" id="studyAgainBtn" style="margin-right: 10px;">Study Again</button>
+                    <button class="btn" id="backMenuBtn">Back to Menu</button>
+                </div>
+            `;
+            document.getElementById('studyAgainBtn').addEventListener('click', startFlashcard);
+            document.getElementById('backMenuBtn').addEventListener('click', goBack);
+        }
+
+        // Matching Mode
+        function startMatching() {
+            matchingData = [];
+            mistakes = 0;
+            completed = 0;
+
+            // Parse muscles and create matching data
+            musclesData.forEach(muscle => {
+                const slots = [];
+
+                muscle.blood.forEach(b => {
+                    slots.push({ type: 'blood', answer: b, filled: false });
+                });
+
+                muscle.nerve.forEach(n => {
+                    slots.push({ type: 'nerve', answer: n, filled: false });
+                });
+
+                matchingData.push({
+                    name: muscle.name,
+                    slots: slots
+                });
+            });
+
+            totalSlots = matchingData.reduce((acc, m) => acc + m.slots.length, 0);
+
+            document.getElementById('modeSelector').classList.remove('active');
+            document.getElementById('flashcardScreen').classList.remove('active');
+            document.getElementById('matchingScreen').classList.add('active');
+
+            // Rebuild the matching container HTML
+            const container = document.querySelector('.matching-container');
+            container.innerHTML = `
+                <div class="matching-header">
+                    <div class="stat-box" id="progressStat">Progress: 0/${totalSlots}</div>
+                    <div class="stat-box" id="mistakeStat">Mistakes: 0</div>
+                </div>
+
+                <div class="matching-content">
+                    <div class="matching-left" id="muscleList"></div>
+                    <div class="matching-right">
+                        <div class="card-pool">
+                            <div class="pool-title">Blood Supply</div>
+                            <div class="cards" id="bloodPool"></div>
+                        </div>
+                        <div class="card-pool">
+                            <div class="pool-title">Innervation</div>
+                            <div class="cards" id="nervePool"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            renderMatching();
+        }
+
+        function renderMatching() {
+            renderMuscleList();
+            renderCardPools();
+            updateStats();
+        }
+
+        function renderMuscleList() {
+            const list = document.getElementById('muscleList');
+            let html = '';
+
+            for (let i = 0; i < matchingData.length; i += 2) {
+                const muscle1 = matchingData[i];
+                const muscle2 = matchingData[i + 1];
+                const idx1 = i;
+                const idx2 = i + 1;
+
+                html += `<div class="muscle-pair">`;
+
+                // Muscle 1
+                html += `
+                    <div>
+                        <div class="muscle-name">${muscle1.name}</div>
+                        <div class="muscle-slots" id="muscle-${idx1}">
+                            ${muscle1.slots.map((slot, sIdx) => `
+                                <div>
+                                    <div class="slot-label">${slot.type === 'blood' ? 'Blood Supply' : 'Innervation'}</div>
+                                    <div class="slot ${slot.type}${slot.filled ? ' has-card' : ''}" id="slot-${idx1}-${sIdx}" ondrop="dropCard(event, ${idx1}, ${sIdx})" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
+                                        ${slot.filled ? `<span id="answer-${idx1}-${sIdx}">${slot.answer}</span>` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+
+                // Muscle 2 (if exists)
+                if (muscle2) {
+                    html += `
+                        <div>
+                            <div class="muscle-name">${muscle2.name}</div>
+                            <div class="muscle-slots" id="muscle-${idx2}">
+                                ${muscle2.slots.map((slot, sIdx) => `
+                                    <div>
+                                        <div class="slot-label">${slot.type === 'blood' ? 'Blood Supply' : 'Innervation'}</div>
+                                        <div class="slot ${slot.type}${slot.filled ? ' has-card' : ''}" id="slot-${idx2}-${sIdx}" ondrop="dropCard(event, ${idx2}, ${sIdx})" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
+                                            ${slot.filled ? `<span id="answer-${idx2}-${sIdx}">${slot.answer}</span>` : ''}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                html += `</div>`;
+            }
+
+            list.innerHTML = html;
+        }
+
+        function renderCardPools() {
+            const bloodPool = document.getElementById('bloodPool');
+            const nervePool = document.getElementById('nervePool');
+
+            let allBlood = [];
+            let allNerves = [];
+
+            matchingData.forEach(m => {
+                m.slots.forEach(slot => {
+                    if (slot.type === 'blood') {
+                        allBlood.push(slot.answer);
+                    } else {
+                        allNerves.push(slot.answer);
+                    }
+                });
+            });
+
+            // Shuffle and group duplicates together
+            allBlood = shuffleArray(allBlood).sort();
+            allNerves = shuffleArray(allNerves).sort();
+
+            bloodPool.innerHTML = allBlood.map(b => `
+                <div class="card" draggable="true" ondragstart="dragStart(event)" ondragend="dragEnd(event)" data-answer="${b}" data-type="blood">
+                    ${b}
+                </div>
+            `).join('');
+
+            nervePool.innerHTML = allNerves.map(n => `
+                <div class="card" draggable="true" ondragstart="dragStart(event)" ondragend="dragEnd(event)" data-answer="${n}" data-type="nerve">
+                    ${n}
+                </div>
+            `).join('');
+        }
+
+        let draggedCard = null;
+
+        function dragStart(e) {
+            draggedCard = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function dragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function allowDrop(e) {
+            e.preventDefault();
+            e.currentTarget.style.background = 'rgba(124, 107, 93, 0.1)';
+        }
+
+        function dragLeave(e) {
+            e.currentTarget.style.background = '';
+        }
+
+        function dropCard(e, muscleIdx, slotIdx) {
+            e.preventDefault();
+            e.currentTarget.style.background = '';
+
+            if (!draggedCard) return;
+
+            const answer = draggedCard.getAttribute('data-answer');
+            const type = draggedCard.getAttribute('data-type');
+            const slot = matchingData[muscleIdx].slots[slotIdx];
+
+            // Validate
+            if (answer === slot.answer) {
+                // Correct!
+                slot.filled = true;
+                completed++;
+
+                const slotEl = document.getElementById(`slot-${muscleIdx}-${slotIdx}`);
+                slotEl.classList.add('has-card');
+                slotEl.innerHTML = `<span id="answer-${muscleIdx}-${slotIdx}">${answer}</span>`;
+
+                draggedCard.classList.add('matched');
+                draggedCard.draggable = false;
+
+                updateStats();
+
+                if (completed === totalSlots) {
+                    showContinueButton();
+                }
+            } else {
+                // Wrong!
+                mistakes++;
+                updateStats();
+            }
+        }
+
+        function showContinueButton() {
+            let btn = document.getElementById('continueBtn');
+
+            if (!btn) {
+                btn = document.createElement('button');
+                btn.id = 'continueBtn';
+                btn.className = 'btn';
+                btn.textContent = 'Continue to Summary';
+                btn.style.display = 'block';
+                btn.style.margin = '1rem auto 2rem';
+                btn.style.textAlign = 'center';
+                btn.onclick = showMatchingCompletion;
+
+                const matchingContainer = document.querySelector('.matching-container');
+                matchingContainer.insertBefore(btn, matchingContainer.firstChild);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('progressStat').textContent = `Progress: ${completed}/${totalSlots}`;
+            document.getElementById('mistakeStat').textContent = `Mistakes: ${mistakes}`;
+        }
+
+        function showMatchingCompletion() {
+            // Remove continue button if it exists
+            const continueBtn = document.getElementById('continueBtn');
+            if (continueBtn) {
+                continueBtn.remove();
+            }
+
+            const container = document.querySelector('.matching-container');
+            container.innerHTML = `
+                <div class="completion-screen">
+                    <h2>Perfect Match!</h2>
+                    <div class="score-display">${totalSlots}/${totalSlots}</div>
+                    <p style="color: var(--grey-mid); margin-bottom: 1rem;">All muscles matched correctly</p>
+                    <p style="color: var(--accent); font-weight: 600; margin-bottom: 2rem;">Mistakes: ${mistakes}</p>
+                    <button class="btn" id="matchAgainBtn" style="margin-right: 10px;">Play Again</button>
+                    <button class="btn" id="backMenuBtn2">Back to Menu</button>
+                </div>
+            `;
+            document.getElementById('matchAgainBtn').addEventListener('click', startMatching);
+            document.getElementById('backMenuBtn2').addEventListener('click', goBack);
+        }
+
+        function goBack() {
+            document.getElementById('modeSelector').classList.add('active');
+            document.getElementById('flashcardScreen').classList.remove('active');
+            document.getElementById('matchingScreen').classList.remove('active');
+            document.getElementById('quizScreen').classList.remove('active');
+        }
+
+        // Quiz Mode Variables
+        let quizQuestions = [];
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+        let quizAttempts = 0;
+
+        function startQuiz() {
+            quizQuestions = [];
+            currentQuizIndex = 0;
+            quizScore = 0;
+            quizAttempts = 0;
+
+            // Generate 10 random questions
+            const questionTypes = ['function', 'origin', 'blood', 'nerve'];
+            const usedIndices = new Set();
+
+            while (quizQuestions.length < 10) {
+                const muscleIdx = Math.floor(Math.random() * musclesData.length);
+                const type = questionTypes[Math.floor(Math.random() * questionTypes.length)];
+                const key = `${muscleIdx}-${type}`;
+
+                if (!usedIndices.has(key)) {
+                    usedIndices.add(key);
+                    quizQuestions.push(generateQuizQuestion(muscleIdx, type));
+                }
+            }
+
+            document.getElementById('modeSelector').classList.remove('active');
+            document.getElementById('flashcardScreen').classList.remove('active');
+            document.getElementById('matchingScreen').classList.remove('active');
+            document.getElementById('quizScreen').classList.add('active');
+
+            showQuizQuestion();
+        }
+
+        function generateQuizQuestion(muscleIdx, type) {
+            const muscle = musclesData[muscleIdx];
+            let question, correct, allOptions;
+
+            if (type === 'function') {
+                question = `What is the function of ${muscle.name}?`;
+                correct = muscle.function.split('\n')[0];
+                allOptions = musclesData.map(m => m.function.split('\n')[0]);
+            } else if (type === 'origin') {
+                question = `Where is the origin of ${muscle.name}?`;
+                correct = muscle.origin.split('\n')[0];
+                allOptions = musclesData.map(m => m.origin.split('\n')[0]);
+            } else if (type === 'blood') {
+                question = `What is the primary blood supply of ${muscle.name}?`;
+                correct = muscle.blood[0];
+                allOptions = musclesData.flatMap(m => m.blood);
+            } else {
+                question = `What is the innervation of ${muscle.name}?`;
+                correct = muscle.nerve[0];
+                allOptions = musclesData.flatMap(m => m.nerve);
+            }
+
+            // Get 4 unique options including the correct one
+            const uniqueOptions = [...new Set(allOptions)];
+            const options = [correct];
+            while (options.length < 4 && uniqueOptions.length > 1) {
+                const option = uniqueOptions[Math.floor(Math.random() * uniqueOptions.length)];
+                if (!options.includes(option)) {
+                    options.push(option);
+                }
+            }
+
+            return {
+                question,
+                correct,
+                options: shuffleArray(options),
+                answered: false,
+                firstAttemptCorrect: false,
+                isCorrect: false,
+                wrongAnswers: [],
+                correctAnswer: null
+            };
+        }
+
+        function showQuizQuestion() {
+            if (currentQuizIndex >= quizQuestions.length) {
+                showQuizCompletion();
+                return;
+            }
+
+            const q = quizQuestions[currentQuizIndex];
+            const quizContainer = document.querySelector('.quiz-container');
+
+            quizContainer.innerHTML = `
+                <div class="quiz-content">
+                    <div class="quiz-progress">Question ${currentQuizIndex + 1}/${quizQuestions.length}</div>
+                    <h3 class="quiz-question">${q.question}</h3>
+                    <div class="quiz-options">
+                        ${q.options.map((opt, idx) => `
+                            <button class="quiz-option-btn ${q.isCorrect && opt === q.correctAnswer ? 'correct' : (q.wrongAnswers && q.wrongAnswers.includes(opt) ? 'wrong' : '')}" onclick="selectQuizAnswer('${opt.replace(/'/g, "\\'")}', '${q.correct.replace(/'/g, "\\'")}')">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                    ${q.isCorrect ? `
+                        <div class="quiz-feedback correct">
+                            ✓ Correct!
+                        </div>
+                        <button class="btn" onclick="nextQuizQuestion()" style="margin-top: 2rem;">Next</button>
+                    ` : (q.answered && !q.isCorrect ? `
+                        <div class="quiz-feedback retry">
+                            Try again!
+                        </div>
+                    ` : '')}
+                </div>
+            `;
+        }
+
+        function selectQuizAnswer(selected, correct) {
+            const q = quizQuestions[currentQuizIndex];
+
+            if (selected === correct) {
+                if (!q.answered) {
+                    // First attempt and correct
+                    q.firstAttemptCorrect = true;
+                    quizScore++;
+                }
+                q.answered = true;
+                q.isCorrect = true;
+                q.correctAnswer = correct;
+                showQuizQuestion();
+            } else {
+                // Wrong answer - add to list of wrong attempts
+                if (!q.wrongAnswers) {
+                    q.wrongAnswers = [];
+                }
+                q.wrongAnswers.push(selected);
+                q.answered = true;
+                q.isCorrect = false;
+                showQuizQuestion();
+            }
+        }
+
+        function nextQuizQuestion() {
+            currentQuizIndex++;
+            showQuizQuestion();
+        }
+
+        function showQuizCompletion() {
+            const quizContainer = document.querySelector('.quiz-container');
+            quizContainer.innerHTML = `
+                <div class="completion-screen">
+                    <h2>Quiz Complete!</h2>
+                    <div class="score-display">${quizScore}/10</div>
+                    <p style="color: var(--grey-mid); margin-bottom: 2rem;">Correct on first attempt</p>
+                    <button class="btn" id="quizAgainBtn" style="margin-right: 10px;">Try Again</button>
+                    <button class="btn" id="quizBackBtn">Back to Menu</button>
+                </div>
+            `;
+            document.getElementById('quizAgainBtn').addEventListener('click', startQuiz);
+            document.getElementById('quizBackBtn').addEventListener('click', goBack);
+        }
+    </script>
+</body>
+</html>

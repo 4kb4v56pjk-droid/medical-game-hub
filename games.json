@@ -21,6 +21,13 @@
       "category": "Nutrition",
       "description": "Test your knowledge of essential vitamins, their functions, and food sources.",
       "link": "games/vitamin-identifier.html"
+    },
+    {
+      "id": "anatomy-game",
+      "title": "Anatomy Learning Game",
+      "category": "Anatomy",
+      "description": "Master back region anatomy through flashcards, matching, and quizzes. Learn muscles, arteries, and innervation.",
+      "link": "games/anatomy-game.html"
     }
   ]
 }
