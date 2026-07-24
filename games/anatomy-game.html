@@ -922,16 +922,20 @@
             allNerves = shuffleArray(allNerves);
 
             bloodPool.innerHTML = allBlood.map(b => `
-                <div class="card" draggable="true" ondragstart="dragStart(event)" ondragend="dragEnd(event)" ontouchstart="touchStart(event)" ontouchmove="touchMove(event)" ontouchend="touchEnd(event)" data-answer="${b}" data-type="blood">
+                <div class="card" draggable="true" ondragstart="dragStart(event)" ondragend="dragEnd(event)" ontouchstart="touchStart(event)" ontouchend="touchEnd(event)" data-answer="${b}" data-type="blood">
                     ${b}
                 </div>
             `).join('');
 
             nervePool.innerHTML = allNerves.map(n => `
-                <div class="card" draggable="true" ondragstart="dragStart(event)" ondragend="dragEnd(event)" ontouchstart="touchStart(event)" ontouchmove="touchMove(event)" ontouchend="touchEnd(event)" data-answer="${n}" data-type="nerve">
+                <div class="card" draggable="true" ondragstart="dragStart(event)" ondragend="dragEnd(event)" ontouchstart="touchStart(event)" ontouchend="touchEnd(event)" data-answer="${n}" data-type="nerve">
                     ${n}
                 </div>
             `).join('');
+
+            // Add document-level touchmove for smooth drag tracking
+            document.removeEventListener('touchmove', touchMove);
+            document.addEventListener('touchmove', touchMove, { passive: false });
         }
 
         let draggedCard = null;
