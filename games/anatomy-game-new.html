@@ -978,7 +978,7 @@
                 const currentX = e.touches[0].clientX;
                 const currentY = e.touches[0].clientY;
 
-                // Calculate offset from initial touch
+                // Calculate offset from INITIAL touch position
                 const offsetX = currentX - touchPosition.x;
                 const offsetY = currentY - touchPosition.y;
 
@@ -987,8 +987,6 @@
                 draggedCard.style.top = (cardStartPos.y + offsetY) + 'px';
                 draggedCard.style.width = cardStartPos.width + 'px';
                 draggedCard.style.height = cardStartPos.height + 'px';
-
-                touchPosition = { x: currentX, y: currentY };
             }
         }
 
