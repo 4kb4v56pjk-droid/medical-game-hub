@@ -959,14 +959,11 @@
             e.target.classList.add('dragging');
             e.target.style.opacity = '0.6';
             e.target.style.zIndex = '10000';
-            e.target.style.position = 'fixed';
 
             const rect = e.target.getBoundingClientRect();
             cardStartPos = {
                 x: rect.left,
-                y: rect.top,
-                width: rect.width,
-                height: rect.height
+                y: rect.top
             };
 
             if (e.touches.length > 0) {
@@ -986,11 +983,8 @@
                 const offsetX = currentX - touchPosition.x;
                 const offsetY = currentY - touchPosition.y;
 
-                // Move card to follow finger
-                draggedCard.style.left = (cardStartPos.x + offsetX) + 'px';
-                draggedCard.style.top = (cardStartPos.y + offsetY) + 'px';
-                draggedCard.style.width = cardStartPos.width + 'px';
-                draggedCard.style.height = cardStartPos.height + 'px';
+                // Use transform for smooth GPU-accelerated movement
+                draggedCard.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
             }
         }
 
@@ -998,11 +992,7 @@
             if (!draggedCard) return;
             draggedCard.classList.remove('dragging');
             draggedCard.style.opacity = '1';
-            draggedCard.style.position = '';
-            draggedCard.style.left = '';
-            draggedCard.style.top = '';
-            draggedCard.style.width = '';
-            draggedCard.style.height = '';
+            draggedCard.style.transform = '';
             draggedCard.style.zIndex = '';
 
             if (e.changedTouches.length > 0) {
