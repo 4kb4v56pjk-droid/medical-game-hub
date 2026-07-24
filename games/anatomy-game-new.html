@@ -922,19 +922,20 @@
             allNerves = shuffleArray(allNerves).sort();
 
             bloodPool.innerHTML = allBlood.map(b => `
-                <div class="card" draggable="true" ondragstart="dragStart(event)" ondragend="dragEnd(event)" data-answer="${b}" data-type="blood">
+                <div class="card" draggable="true" ondragstart="dragStart(event)" ondragend="dragEnd(event)" ontouchstart="touchStart(event)" ontouchend="touchEnd(event)" data-answer="${b}" data-type="blood">
                     ${b}
                 </div>
             `).join('');
 
             nervePool.innerHTML = allNerves.map(n => `
-                <div class="card" draggable="true" ondragstart="dragStart(event)" ondragend="dragEnd(event)" data-answer="${n}" data-type="nerve">
+                <div class="card" draggable="true" ondragstart="dragStart(event)" ondragend="dragEnd(event)" ontouchstart="touchStart(event)" ontouchend="touchEnd(event)" data-answer="${n}" data-type="nerve">
                     ${n}
                 </div>
             `).join('');
         }
 
         let draggedCard = null;
+        let touchPosition = null;
 
         function dragStart(e) {
             draggedCard = e.target;
@@ -944,6 +945,37 @@
 
         function dragEnd(e) {
             e.target.classList.remove('dragging');
+        }
+
+        function touchStart(e) {
+            draggedCard = e.target;
+            e.target.classList.add('dragging');
+            if (e.touches.length > 0) {
+                touchPosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            }
+        }
+
+        function touchEnd(e) {
+            if (!draggedCard) return;
+            e.target.classList.remove('dragging');
+
+            if (e.changedTouches.length > 0) {
+                const touchX = e.changedTouches[0].clientX;
+                const touchY = e.changedTouches[0].clientY;
+                const elementBelow = document.elementFromPoint(touchX, touchY);
+
+                if (elementBelow && elementBelow.classList.contains('slot')) {
+                    const slotId = elementBelow.id;
+                    const match = slotId.match(/slot-(\d+)-(\d+)/);
+                    if (match) {
+                        const muscleIdx = parseInt(match[1]);
+                        const slotIdx = parseInt(match[2]);
+                        dropCard({ preventDefault: () => {}, currentTarget: elementBelow }, muscleIdx, slotIdx);
+                    }
+                }
+            }
+            draggedCard = null;
+            touchPosition = null;
         }
 
         function allowDrop(e) {
